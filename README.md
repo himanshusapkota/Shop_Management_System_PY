@@ -35,7 +35,7 @@ It was a good reminder that debugging is also a big part of programming!
 
 ## Screenshots
 
-*Screenshots of the project will be added here soon.*
+
 
 ## How to Run
 
