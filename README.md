@@ -34,8 +34,22 @@ Eventually, I worked through the errors and got it running.
 It was a good reminder that debugging is also a big part of programming!
 
 ## Screenshots
+Some of the Screenshot of the project.
+
+<img width="527" height="575" alt="image" src="https://github.com/user-attachments/assets/c91aabd4-8daf-48af-9f19-9e1660057537" />
+<img width="717" height="243" alt="image" src="https://github.com/user-attachments/assets/097f8111-fce4-4302-878c-92ebb4df8b36" />
+<img width="755" height="247" alt="image" src="https://github.com/user-attachments/assets/7d8cab50-ad98-4693-80c1-9084ec44eabc" />
+<img width="1122" height="215" alt="image" src="https://github.com/user-attachments/assets/e4d9600d-bb31-4fad-b9b8-64a1e0919bfc" />
+<img width="783" height="438" alt="image" src="https://github.com/user-attachments/assets/e64a06f3-1668-4201-ace4-bfe1a95ca295" />
 
 
+
+
+
+<<<<<<< HEAD
+
+=======
+>>>>>>> 32fab0773f75db0fad45edfe0557ac046aa03223
 
 ## How to Run
 
