@@ -269,3 +269,66 @@ class Shop:
             fields,
             rows
         )
+
+    def write_csv(filename , fields , rows):
+        with open (filename , "w" , newline= "" , encoding = "utf-8") as f :
+            writer = csv.DictWriter(f , fieldnames = fields)
+            writer.writeheader()
+            writer.writerows(rows)
+
+
+    def id_number(text):        
+        try:
+            return int (text[-1:])
+
+        except ValueError:
+            return 0    
+
+
+    def read_text(prompt):
+        while True:
+            text = input(prompt).strip()        
+            if text != "":
+                return text
+            print("This can't be empty")
+
+    def read_number(prompt, whole=False ,allow_blank=False):        
+        while True:
+            text = input(prompt).strip()
+            if allow_blank and text == "":
+                return None
+
+            try : 
+                value = int(text) if whole else float(text)
+
+            except ValueError :    
+                print("Please enter a whole number." if whole else "Please Enter a Number")
+
+                continue
+
+            if value < 0 :
+                print("Negative values are not allowed")
+                continue
+
+            return value 
+
+    def ask_yes_no (prompt):
+        return input(prompt).strip().lower == "y"
+
+
+
+    def print_products(products):    
+        print("-" * 78)
+        print(f"{'ID':<6}{'Name':<22}{'Category':<14}{'Buy':>9}{'Sell':>9}{'Qty':>6}")
+        print("-" * 78)
+
+        for p in products : 
+            print(f"{p.id:<6}{p.name[:21]:<22}{p.category[:13]:<14}"
+              f"{p.buying_price:>9.2f}{p.selling_price:>9.2f}{p.quantity:>6}")
+        print("-" * 78)
+
+
+
+        
+
+
