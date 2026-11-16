@@ -3,7 +3,7 @@
 import csv
 import os
 from datetime import datetime
-
+z
 PRODUCTS_FILE = "products.csv"
 SALES_FILE = "sales.csv"
 EXPORT_FOLDER = "exports"
@@ -488,7 +488,8 @@ def sales_report(shop):
 
     print("-" * 82)
 
-def low_stock_alert(shop):    
+
+def low_stock_alert(shop):
     print("\n-----Low Stock Alert-----")
     low = shop.low_stock_products()
     if len(low) == 0:
@@ -508,19 +509,20 @@ def export_data(shop):
 
     choice = input("Choose : ").strip()
 
-    if choice not in ["1" , "2" , "3" , "4" ,]:
-              if choice !="5":
-                  print("Invalid Choice")
-                  return
+    if choice not in ["1", "2", "3", "4"]:
+        if choice != "5":
+            print("Invalid Choice")
+        return
+
     try:
         os.makedirs(EXPORT_FOLDER, exist_ok=True)                  
         if choice in ["1" , "4"]: 
-            shop.export_product()
-            print("Exported exports/sales.csv")
+            shop.export_products()
+            print("Exported exports/products.csv")
 
         if choice in ["2" ,"4"]:
             shop.export_sales()    
-            print("Exported export/sales.csv")
+            print("Exported exports/sales.csv")
 
         if choice in ["3", "4"]:
             shop.export_inventory()
@@ -546,8 +548,9 @@ def show_menu():
     print("9.Export Data to CSV")
     print("10.Exit")
 
+
 def main():
-    shop = shop()
+    shop = Shop()
     shop.load()
 
     actions = {
@@ -577,14 +580,9 @@ def main():
             actions[choice](shop)
 
         else: 
-            print("Invalid choice, enter a number form 1 to 10")    
+            print("Invalid choice, enter a number from 1 to 10")    
 
 
 
-if __name__=="main":
+if __name__ == "__main__":
     main()
-
-
-
-    
-
