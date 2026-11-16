@@ -1,3 +1,4 @@
+#SHOP MANAGEMENT SYSTEM 
 
 import csv
 import os
@@ -486,3 +487,104 @@ def sales_report(shop):
         )
 
     print("-" * 82)
+
+def low_stock_alert(shop):    
+    print("\n-----Low Stock Alert-----")
+    low = shop.low_stock_products()
+    if len(low) == 0:
+        print("All product have enough stock")
+        return
+    print(f"Products with fewer than {LOW_STOCK_LIMIT} items left : ")    
+    print_products(low)
+
+
+def export_data(shop):
+    print("\n------Export Data to CSV-----")
+    print("1.Products")
+    print("2.Sales")
+    print("3.Inventory")
+    print("4.All of Them")
+    print("5.Back")
+
+    choice = input("Choose : ").strip()
+
+    if choice not in ["1" , "2" , "3" , "4" ,]:
+              if choice !="5":
+                  print("Invalid Choice")
+                  return
+    try:
+        os.makedirs(EXPORT_FOLDER, exist_ok=True)                  
+        if choice in ["1" , "4"]: 
+            shop.export_product()
+            print("Exported exports/sales.csv")
+
+        if choice in ["2" ,"4"]:
+            shop.export_sales()    
+            print("Exported export/sales.csv")
+
+        if choice in ["3", "4"]:
+            shop.export_inventory()
+            print("Exported exports/inventory.csv")    
+
+    except OSError as error :        
+        print("Could not export:" , error)
+
+
+def show_menu():
+    print("\n====================")       
+    print("SHOP MANAGEMENT SYSTEM")
+    print("====================")
+
+    print("1.Add Product")
+    print("2.View Product")
+    print("3.Search Product")
+    print("4.Update Product")
+    print("5.Delete Product")
+    print("6.Sell Product")
+    print("7.Sales Report")
+    print("8.Low Stock Alert")
+    print("9.Export Data to CSV")
+    print("10.Exit")
+
+def main():
+    shop = shop()
+    shop.load()
+
+    actions = {
+        "1": add_product,
+        "2":view_products,
+        "3":search_product,
+        "4":update_product,
+        "5":delete_product,
+        "6":sell_product,
+        "7":sales_report,
+        "8":low_stock_alert,
+        "9":export_data
+        
+
+        
+    }
+
+
+    while True:
+        show_menu()
+        choice = input("Enter your choice(1-10) ").strip()
+
+        if choice == "10":
+            print("Goodbye")
+            break
+        elif choice in actions:
+            actions[choice](shop)
+
+        else: 
+            print("Invalid choice, enter a number form 1 to 10")    
+
+
+
+if __name__=="main":
+    main()
+
+
+
+    
+
