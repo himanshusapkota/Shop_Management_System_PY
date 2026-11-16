@@ -79,12 +79,10 @@ class Shop:
         self.sales = []
 
     def load(self):
-
         for filename, fields in [
             (PRODUCTS_FILE, PRODUCT_FIELDS),
             (SALES_FILE, SALES_FIELDS)
         ]:
-
             if not os.path.exists(filename):
                 write_csv(filename, fields, [])
 
@@ -270,65 +268,221 @@ class Shop:
             rows
         )
 
-    def write_csv(filename , fields , rows):
-        with open (filename , "w" , newline= "" , encoding = "utf-8") as f :
-            writer = csv.DictWriter(f , fieldnames = fields)
-            writer.writeheader()
-            writer.writerows(rows)
+
+def read_text(prompt):
+    while True:
+        text = input(prompt).strip()
+
+        if text != "":
+            return text
+
+        print("This can't be empty")
 
 
-    def id_number(text):        
+def read_number(prompt, whole=False, allow_blank=False):
+    while True:
+        text = input(prompt).strip()
+
+        if allow_blank and text == "":
+            return None
+
         try:
-            return int (text[-1:])
+            value = int(text) if whole else float(text)
 
         except ValueError:
-            return 0    
+            print("Please enter a whole number." if whole else "Please Enter a Number")
+            continue
+
+        if value < 0:
+            print("Negative values are not allowed")
+            continue
+
+        return value
 
 
-    def read_text(prompt):
-        while True:
-            text = input(prompt).strip()        
-            if text != "":
-                return text
-            print("This can't be empty")
-
-    def read_number(prompt, whole=False ,allow_blank=False):        
-        while True:
-            text = input(prompt).strip()
-            if allow_blank and text == "":
-                return None
-
-            try : 
-                value = int(text) if whole else float(text)
-
-            except ValueError :    
-                print("Please enter a whole number." if whole else "Please Enter a Number")
-
-                continue
-
-            if value < 0 :
-                print("Negative values are not allowed")
-                continue
-
-            return value 
-
-    def ask_yes_no (prompt):
-        return input(prompt).strip().lower == "y"
+def ask_yes_no(prompt):
+    return input(prompt).strip().lower() == "y"
 
 
+def print_products(products):
+    print("-" * 78)
+    print(f"{'ID':<6}{'Name':<22}{'Category':<14}{'Buy':>9}{'Sell':>9}{'Qty':>6}")
+    print("-" * 78)
 
-    def print_products(products):    
-        print("-" * 78)
-        print(f"{'ID':<6}{'Name':<22}{'Category':<14}{'Buy':>9}{'Sell':>9}{'Qty':>6}")
-        print("-" * 78)
+    for p in products:
+        print(
+            f"{p.id:<6}{p.name[:21]:<22}{p.category[:13]:<14}"
+            f"{p.buying_price:>9.2f}{p.selling_price:>9.2f}{p.quantity:>6}"
+        )
 
-        for p in products : 
-            print(f"{p.id:<6}{p.name[:21]:<22}{p.category[:13]:<14}"
-              f"{p.buying_price:>9.2f}{p.selling_price:>9.2f}{p.quantity:>6}")
-        print("-" * 78)
-
-
-
-        
+    print("-" * 78)
 
 
+def add_product(shop):
+    print("\n------------------------------------")
+    print("---------- ADD PRODUCT ------------")
+    print("------------------------------------")
+
+    name = read_text("Product Name : ")
+    category = read_text("Category : ")
+    buying = read_number("Buying Price : ")
+    selling = read_number("Selling Price : ")
+
+    if selling < buying:
+        print("Warning : Selling Price is lower than buying price.")
+
+        if not ask_yes_no("Add Anyway? (y/n): "):
+            print("Cancelled")
+            return
+
+    quantity = read_number("Quantity : ", whole=True)
+
+    product = shop.add_product(name, category, buying, selling, quantity)
+
+    print("Product added with ID:", product.id)
+
+
+def view_products(shop):
+    print("\n---------- ALL PRODUCTS ----------")
+
+    if len(shop.products) == 0:
+        print("No product yet!!")
+        return
+
+    print_products(shop.products)
+    print("Total products:", len(shop.products))
+
+
+def search_product(shop):
+    print("\n---------- SEARCH PRODUCT ----------")
+
+    found = shop.search(read_text("Enter Product ID or Name : "))
+
+    if len(found) == 0:
+        print("Nothing Found")
+
+    else:
+        print_products(found)
+
+
+def update_product(shop):
+    print("\n--- Update Product ---")
+
+    product = shop.find_by_id(read_text("Enter product ID: "))
+
+    if product is None:
+        print("Product not found.")
+        return
+
+    print("Leave a field blank to keep the current value.")
+
+    name = input(f"Name [{product.name}]: ").strip()
+
+    if name != "":
+        product.name = name
+
+    buying = read_number(
+        f"Buying price [{product.buying_price:.2f}]: ",
+        allow_blank=True
+    )
+
+    if buying is not None:
+        product.buying_price = buying
+
+    selling = read_number(
+        f"Selling Price [{product.selling_price:.2f}]: ",
+        allow_blank=True
+    )
+
+    if selling is not None:
+        product.selling_price = selling
+
+    quantity = read_number(
+        f"Quantity [{product.quantity}]: ",
+        whole=True,
+        allow_blank=True
+    )
+
+    if quantity is not None:
+        product.quantity = quantity
+
+    shop.save_products()
+    print("Product Updated.")
+
+
+def delete_product(shop):
+    print("\n-----Delete Product-----")
+
+    product = shop.find_by_id(read_text("Enter Product ID : "))
+
+    if product is None:
+        print("Product not found")
+        return
+
+    if ask_yes_no(f"Delete '{product.name}'? (y/n) : "):
+        shop.delete_product(product)
+        print("Product Deleted")
+
+    else:
+        print("Cancelled")
+
+
+def sell_product(shop):
+    print("\n-----Sell Product-----")
+
+    if len(shop.products) == 0:
+        print("No product to sell")
+        return
+
+    print_products(shop.products)
+
+    product = shop.find_by_id(read_text("Enter product ID to sell : "))
+
+    if product is None:
+        print("Product Not Found")
+        return
+
+    if product.quantity == 0:
+        print("Sorry this product is out of stock")
+        return
+
+    print(f"{product.name} - {product.quantity} in Stock, Price {product.selling_price:.2f}")
+
+    quantity = read_number("Quantity to sell : ", whole=True)
+
+    try:
+        sale = shop.sell(product, quantity)
+
+    except ValueError as error:
+        print(error)
+        return
+
+    print("\nSale Completed")
+    print(f"Total amount : {sale.total:.2f}")
+    print(f"Profit : {sale.profit:.2f}")
+    print(f"Stock Left : {product.quantity}")
+
+
+def sales_report(shop):
+    print("\n-----Sales Report-----")
+
+    if len(shop.sales) == 0:
+        print("No Sales yet")
+        return
+
+    print("Total transactions: ", len(shop.sales))
+    print(f"Total Revenue : {shop.total_revenue():.2f}")
+    print(f"Total gross profit : {shop.total_profit():.2f}")
+
+    print("\nSales history")
+    print("-" * 82)
+    print(f"{'Sale':<7}{'Date':<18}{'Product':<22}{'Qty':>5}{'Price':>9}{'Total':>10}{'Profit':>10}")
+    print("-" * 82)
+
+    for s in shop.sales:
+        print(
+            f"{s.sale_id:<7}{s.date:<18}{s.product_name[:21]:<22}"
+            f"{s.quantity:>5}{s.unit_price:>9.2f}{s.total:>10.2f}{s.profit:>10.2f}"
+        )
+
+    print("-" * 82)
